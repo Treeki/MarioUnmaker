@@ -32,7 +32,7 @@ which ones are signed or not.
 | 6E | u8 | Unknown |
 | 6F | u8 | Unknown |
 | 70 | u16 | Time limit |
-| 72 | u8 | Unknown |
+| 72 | u8 | Autoscroll (0 = none, 1 = slow, 2 = medium, 3 = fast) |
 | 73 | u8 | Unknown |
 | 74 | u32 | Unknown |
 | 78 | u8[0x60] | Unknown |
