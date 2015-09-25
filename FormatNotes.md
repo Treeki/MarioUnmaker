@@ -72,7 +72,7 @@ which ones are signed or not.
 
 ## Actor Names
 | Internal ID | .cdt ID | Name | SubName | Description |
-|-------------|---------|------|---------|
+|-------------|---------|------|---------|-------------|
 | 0 | *none* | TenCoin |  | |
 | 1 | *none* | Lift |  | |
 | 2 | *none* | Lift |  | |
