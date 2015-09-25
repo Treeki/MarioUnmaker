@@ -1,5 +1,7 @@
 Some notes on the Super Mario Maker '.cdt' level format, collected through
-reverse-engineering of the version 1.01 game executable.
+reverse-engineering of the version 1.01 game executable and careful
+examination of level files. Thanks to RoadrunnerWMC for additional work
+investigating files.
 
 Not guaranteed to be correct, a lot of these field purposes are just
 educated guesses.
@@ -39,7 +41,7 @@ which ones are signed or not.
 | E0 | *padding* | 0xC unused bytes |
 | EC | u32 | Object count |
 | F0 | obj_t[2600] | Objects *(note that the full size is reserved even if the course has less than 2600 objects)* |
-| 145F0 | unk_t[300] | Unknown structures, documented below |
+| 145F0 | effect_t[300] | Sound effects |
 | 14F50 | *padding* | 0xB0 unused bytes |
 
 ## Object Structure
@@ -56,11 +58,11 @@ which ones are signed or not.
 | 18 | s8 | Object type |
 | 19 | s8 | Child object type |
 | 1A | s16 | Link ID (assigned to pipes and rails) |
-| 1C | s16 | Unknown |
-| 1E | u8 | Unknown |
-| 1F | u8 | Unknown |
+| 1C | s16 | Effect Index (-1 if none) |
+| 1E | s8 | Unknown *(Always -1 in sample courses - could be object's transformation ID?)* |
+| 1F | s8 | Child object's transformation ID (used by EditKinokoFunny) |
 
-## Unknown Structure
+## Sound/Visual Effect Structure *(referenced by object field 1C)*
 | Offset | Type | Description |
 |--------|------|-------------|
 | 00 | u8 | Unknown |
@@ -308,6 +310,110 @@ which ones are signed or not.
 | 232 | *none* | SampleActor |  | |
 | 233 | *none* | EnemySample | Sample | |
 
+## Transformation IDs
+
+| ID | Name |
+|----|------|
+| 0 | Mario |
+| 1 | Peach |
+| 2 | Luigi |
+| 3 | Koopa |
+| 4 | Kuribo |
+| 5 | Block |
+| 6 | Kinopio |
+| 7 | MarioSilver |
+| 8 | MarioGold |
+| 9 | Trampoline |
+| 10 | Wario |
+| 11 | SideStepper |
+| 12 | MarioOriginal |
+| 13 | Heiho |
+| 14 | Rosalina |
+| 15 | Yoshi |
+| 16 | KoopaJr |
+| 17 | DrMario |
+| 18 | MarioKart |
+| 19 | WoolYoshiAqua |
+| 20 | WoolYoshiGreen |
+| 21 | WoolYoshiPink |
+| 22 | WoolYoshiBig |
+| 23 | Kirby |
+| 24 | Dedede |
+| 25 | MetaKnight |
+| 26 | Pit |
+| 27 | Palutena |
+| 28 | DarkPit |
+| 29 | MegaMan |
+| 30 | Samus |
+| 31 | ZeroSams |
+| 32 | Robot |
+| 33 | Marth |
+| 34 | Ike |
+| 35 | Lucina |
+| 36 | Robin |
+| 37 | Pikachu |
+| 38 | Lucario |
+| 39 | Charizard |
+| 40 | Greninja |
+| 41 | Pudding |
+| 42 | Mewtwo |
+| 43 | Orima |
+| 44 | Pikmin |
+| 45 | Link |
+| 46 | Zelda |
+| 47 | Ganon |
+| 48 | Sheik |
+| 49 | Tincle |
+| 50 | ThunLink |
+| 51 | Shulk |
+| 52 | Ness |
+| 53 | Lucas |
+| 54 | SplaIka |
+| 55 | SplaBoy |
+| 56 | SplaGirl |
+| 57 | Fit |
+| 58 | ChibiRobo |
+| 59 | Murabito |
+| 60 | Tanuki |
+| 61 | Sizue |
+| 62 | Kento |
+| 63 | Kaizo |
+| 64 | Lisa |
+| 65 | Kinuyo |
+| 66 | Totakeke |
+| 67 | SizueWinter |
+| 68 | Fuko |
+| 69 | Futa |
+| 70 | ResetSan |
+| 71 | Shunk |
+| 72 | TsubuMame |
+| 73 | Kappei |
+| 74 | MishiNeko |
+| 75 | Takumi |
+| 76 | Falcon |
+| 77 | GameWatch |
+| 78 | Sonic |
+| 79 | DonkeyKong |
+| 80 | DiddyKong |
+| 81 | DuckHunt |
+| 82 | PackMan |
+| 83 | Blackey |
+| 84 | Fox |
+| 85 | LittleMac |
+| 86 | Falco |
+| 87 | Slippy |
+| 88 | Peppy |
+| 89 | Arwing |
+| 90 | DiyMario |
+| 91 | DonkeyKongJr |
+| 92 | Shellcreeper |
+| 93 | Waluigi |
+| 94 | Wiibo |
+| 95 | MahjongTile |
+| 96 | MrHakari |
+| 97 | Ashley |
+| 98 | Nikki |
+
 ## Level Notes
 
 Objects seem to default to: objFlags = 06000840, childFlags = 06000840, _14 = 00000000,
@@ -344,6 +450,16 @@ For blocks (EditHatenaBlock, EditRengaBlock, etc), childType defines the
 e.g.: 64 = EditTsuta (vine), 15 = EditBombhei (bob-omb), 41 = EditTeresa (Boo).
 
 For Firebars, extData seems to control the initial rotation of the bar (and possibly other things).
+
+For EditKinokoFunny, field 1F specifies what form the mushroom will transform
+you into - e.g.: 1 = Peach, 2 = Luigi, 3 = Koopa, 4 = Goomba, 5 = ? block, ...
+(see 'Transformation IDs' section above)
+
+In every sample level, this field exists on a block which contains an
+EditKinokoFunny. I speculate that field 1E may do the same thing for the
+outer/parent object, which means that it could work when applied to a
+standalone '?' mushroom - but I cannot confirm this as none of the sample
+levels contain these.
 
 Pipes, Rails and Clown Cars have an incrementing 'Link ID' stored in field 1A.
 Objects like Piranha Plants (EditPakkun) which can go inside a pipe will have
