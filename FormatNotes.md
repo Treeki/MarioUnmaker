@@ -316,6 +316,7 @@ childType = -1, linkID = -1, _1C = -1, _1E = 255, _1F = 255
 Object flag 2 seems to make an object winged.
 
 Object flag 4 affects objects in the following ways (ref function at 0x20A2AF0 and others):
+
 | Object | When Clear | When Set |
 |--------|------------|----------|
 | Koopa Troopa | Green | Red |
@@ -335,7 +336,7 @@ There's bound to be more, these are just the ones I've found out.
 
 Object flag 0x100 turns Teresa (Boo) into a 'Necchi' (not sure what that is).
 
-If (((objFlags & 0x6000) >> 13) == 2), an object will be converted into its large version.
+If `(((objFlags & 0x6000) >> 13) == 2)`, an object will be converted into its large version.
 
 
 For blocks (EditHatenaBlock, EditRengaBlock, etc), childType defines the
